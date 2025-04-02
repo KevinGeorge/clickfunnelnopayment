@@ -32,33 +32,29 @@
     return "Address Information";
   }
 
-  function hidePaymentElements() {
-    const fullPaymentBlock = document.querySelector('[data-page-element="CheckoutMultiplePayments/V2"]');
-    if (fullPaymentBlock && fullPaymentBlock.style.display !== 'none') {
-      fullPaymentBlock.style.display = 'none';
-      console.log("🔧 Hidden full payment block again");
-    }
-
-    const billing = document.querySelector('.pai-billing-address-content');
-    if (billing && billing.style.display !== 'none') {
-      billing.style.display = 'none';
-      console.log("🔧 Hidden billing section again");
-    }
-// Cacher l’iframe de paiement directement (Pai / Rebilly)
-const framepayIframe = document.querySelector('iframe[src*=\"framepay.payments.ai\"]');
-if (framepayIframe && framepayIframe.style.display !== 'none') {
-  framepayIframe.style.display = 'none';
-  console.log("🔧 Hidden framepay iframe directly");
-}
-
-// OU forcer le bloc entier avec !important
-const cardBlock = document.querySelector('[data-page-element=\"CheckoutMultiplePayments/V2\"]');
-if (cardBlock) {
-  cardBlock.style.setProperty('display', 'none', 'important');
-  console.log("🔧 Forced hide on full payment block with !important");
-}
-
+function hidePaymentElements() {
+  const fullBlock = document.querySelector('[data-page-element="CheckoutMultiplePayments/V2"]');
+  if (fullBlock) {
+    fullBlock.style.setProperty('visibility', 'hidden', 'important');
+    fullBlock.style.setProperty('height', '0', 'important');
+    fullBlock.style.setProperty('overflow', 'hidden', 'important');
+    fullBlock.style.setProperty('padding', '0', 'important');
+    fullBlock.style.setProperty('margin', '0', 'important');
+    console.log("🛑 Forced full block to disappear visually and structurally");
   }
+
+  const framepayIframe = document.querySelector('iframe[src*="framepay.payments.ai"]');
+  if (framepayIframe) {
+    framepayIframe.style.setProperty('display', 'none', 'important');
+    console.log("🛑 Hidden Framepay iframe with !important");
+  }
+
+  const billing = document.querySelector('.pai-billing-address-content');
+  if (billing) {
+    billing.style.setProperty('display', 'none', 'important');
+    console.log("🛑 Hidden billing section with !important");
+  }
+}
 
   function customizeSubmitButton() {
     const billingLabel = document.querySelector('.elBillingForm .elCheckoutFormLabel');
