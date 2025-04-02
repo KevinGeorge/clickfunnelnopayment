@@ -1,3 +1,4 @@
+<script>
 (function waitForCheckout() {
   if (typeof window.Checkout === 'undefined') {
     console.log("⏳ Checkout not ready, retrying...");
@@ -13,18 +14,24 @@
 
   function applyUrlCoupon() {
     const urlCoupon = getUrlCoupon();
-    if (urlCoupon && window.Checkout && Checkout.store && Checkout.store.coupons && Checkout.store.coupons.currentCode) {
+    if (urlCoupon && window.Checkout?.store?.coupons?.currentCode) {
       console.log("🏷️ Applying coupon:", urlCoupon);
       Checkout.store.coupons.currentCode.set(urlCoupon);
+
       const onApplyCouponEvent = new CustomEvent("ON_APPLY_COUPON", {
-        detail: { isCouponValidation: true }
+        detail: { isCouponValidation: true },
       });
       window.dispatchEvent(onApplyCouponEvent);
     }
   }
 
-function makeItFree() {
-  console.log("💸 Making checkout free — hiding payment");
+  function getFreeSubmitText() {
+    return "Get Instant Access";
+  }
+
+  function getAddressText() {
+    return "Address Information";
+  }
 
   function hidePaymentElements() {
     const fullPaymentBlock = document.querySelector('[data-page-element="CheckoutMultiplePayments/V2"]');
@@ -40,56 +47,56 @@ function makeItFree() {
     }
   }
 
-  // 1. Apply hide now
-  hidePaymentElements();
+  function customizeSubmitButton() {
+    const billingLabel = document.querySelector('.elBillingForm .elCheckoutFormLabel');
+    if (billingLabel) billingLabel.innerText = getAddressText();
 
-  // 2. Set up a MutationObserver to re-hide if CF rebuilds the DOM
-  const targetNode = document.body;
-  const observer = new MutationObserver(() => {
-    hidePaymentElements();
-  });
+    const button = document.querySelector('[href="#submit-checkout-form"]');
+    if (button) {
+      const newButton = button.cloneNode(true);
+      button.replaceWith(newButton);
 
-  observer.observe(targetNode, {
-    childList: true,
-    subtree: true
-  });
+      const label = newButton.querySelector('.elButtonMainText');
+      if (label) label.innerText = getFreeSubmitText();
 
-  // 3. Change button + label
-  const billingLabel = document.querySelector('.elBillingForm .elCheckoutFormLabel');
-  if (billingLabel) billingLabel.innerText = "Address Information";
-
-  const button = document.querySelector('[href=\"#submit-checkout-form\"]');
-  if (button) {
-    const newButton = button.cloneNode(true);
-    button.replaceWith(newButton);
-
-    const label = newButton.querySelector('.elButtonMainText');
-    if (label) label.innerText = "Get Instant Access";
-
-    newButton.addEventListener('click', function () {
-      console.log("🧼 Submitting free checkout without payment...");
-      CheckoutSubmit.customSubmitFromButtonClick(this, () => scrollToFirstVisibleError());
-    });
+      newButton.addEventListener('click', function () {
+        console.log("🧼 Submitting free checkout without payment...");
+        CheckoutSubmit.customSubmitFromButtonClick(this, () => scrollToFirstVisibleError());
+      });
+    }
   }
-}
 
   let isFree = false;
+
+  function makeItFree() {
+    console.log("💸 Making checkout free — hiding payment");
+    hidePaymentElements();
+    customizeSubmitButton();
+  }
+
+  // Listen for summary update
   Checkout.store.summary.listen((newValue) => {
-    if (newValue && newValue.state === "ok" && newValue.data && newValue.data.total && newValue.data.total.amount === 0) {
+    if (newValue?.state === "ok" && newValue?.data?.total?.amount === 0) {
       isFree = true;
-      setTimeout(() => makeItFree(), 500);
+      setTimeout(() => makeItFree(), 10);
     }
   });
 
-  // Fallback toutes les 2s au cas où
+  // Reapply coupon if store state resets
+  Checkout.store.state.listen((state) => {
+    if (!Checkout.store.coupons.applied.get().length) {
+      console.log("🔁 Coupon reapplied");
+      applyUrlCoupon();
+    }
+  });
+
+  // Rehide elements every 500ms if necessary
   setInterval(() => {
     if (isFree) {
-      const totalText = document.body.innerText;
-      if (totalText.includes('$0.00')) {
-        makeItFree();
-      }
+      hidePaymentElements();
     }
-  }, 2000);
+  }, 500);
 
   setTimeout(applyUrlCoupon, 1000);
 })();
+</script>
