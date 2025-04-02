@@ -1,4 +1,3 @@
-<script>
 (function waitForCheckout() {
   if (typeof window.Checkout === 'undefined') {
     console.log("⏳ Checkout not ready, retrying...");
@@ -99,4 +98,3 @@
 
   setTimeout(applyUrlCoupon, 1000);
 })();
-</script>
