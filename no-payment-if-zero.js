@@ -35,8 +35,10 @@
         console.log("💸 Making checkout free — hiding payment");
 
         document.querySelectorAll('[data-page-element="CheckoutMultiplePayments/V2"], [data-page-element="CheckoutSavedMultiplePayments/V1"]').forEach(el => {
-            el?.closest('.elCheckoutRow')?.style.display = 'none';
-        });
+  if (el && el.closest('.elCheckoutRow')) {
+    el.closest('.elCheckoutRow').style.display = 'none';
+  }
+});
 
         const paiCardSection = document.querySelector('.pai-payment-content');
         if (paiCardSection) paiCardSection.style.display = 'none';
