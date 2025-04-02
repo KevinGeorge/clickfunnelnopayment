@@ -26,26 +26,39 @@
 function makeItFree() {
   console.log("💸 Making checkout free — hiding payment");
 
-  // 1. Cacher tout le bloc de paiement (détecté par toi)
-  const fullPaymentBlock = document.querySelector('[data-page-element="CheckoutMultiplePayments/V2"]');
-  if (fullPaymentBlock) {
-    fullPaymentBlock.style.display = 'none';
-    console.log("🔧 Hidden full payment block: [data-page-element='CheckoutMultiplePayments/V2']");
+  function hidePaymentElements() {
+    const fullPaymentBlock = document.querySelector('[data-page-element="CheckoutMultiplePayments/V2"]');
+    if (fullPaymentBlock && fullPaymentBlock.style.display !== 'none') {
+      fullPaymentBlock.style.display = 'none';
+      console.log("🔧 Hidden full payment block again");
+    }
+
+    const billing = document.querySelector('.pai-billing-address-content');
+    if (billing && billing.style.display !== 'none') {
+      billing.style.display = 'none';
+      console.log("🔧 Hidden billing section again");
+    }
   }
 
-  // 2. Cacher la section d’adresse de facturation si présente
-  const billing = document.querySelector('.pai-billing-address-content');
-  if (billing) {
-    billing.style.display = 'none';
-    console.log("🔧 Hidden .pai-billing-address-content");
-  }
+  // 1. Apply hide now
+  hidePaymentElements();
 
-  // 3. Changer \"Billing Information\" → \"Address Information\"
+  // 2. Set up a MutationObserver to re-hide if CF rebuilds the DOM
+  const targetNode = document.body;
+  const observer = new MutationObserver(() => {
+    hidePaymentElements();
+  });
+
+  observer.observe(targetNode, {
+    childList: true,
+    subtree: true
+  });
+
+  // 3. Change button + label
   const billingLabel = document.querySelector('.elBillingForm .elCheckoutFormLabel');
   if (billingLabel) billingLabel.innerText = "Address Information";
 
-  // 4. Remplacer le bouton de commande
-  const button = document.querySelector('[href="#submit-checkout-form"]');
+  const button = document.querySelector('[href=\"#submit-checkout-form\"]');
   if (button) {
     const newButton = button.cloneNode(true);
     button.replaceWith(newButton);
