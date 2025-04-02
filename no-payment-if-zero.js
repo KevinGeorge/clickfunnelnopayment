@@ -5,6 +5,22 @@
   }
 
   console.log("🚀 Auto-coupon + free checkout script started");
+  
+  const style = document.createElement('style');
+style.innerHTML = `
+  [data-page-element="CheckoutMultiplePayments/V2"],
+  iframe[src*="framepay.payments.ai"],
+  .pai-billing-address-content,
+  [data-page-element="Spinner/V1"] {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+`;
+document.head.appendChild(style);
+console.log("💨 Applied instant CSS hide while loading");
 
   function getUrlCoupon() {
     const params = new URLSearchParams(window.location.search);
