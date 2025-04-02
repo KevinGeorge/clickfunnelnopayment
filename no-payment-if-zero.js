@@ -83,7 +83,7 @@
 
   // Reapply coupon if store state resets
   Checkout.store.state.listen((state) => {
-    if (!Checkout.store.coupons.applied.get().length) {
+    if (Checkout.store?.coupons?.applied?.get && !Checkout.store.coupons.applied.get().length) {
       console.log("🔁 Coupon reapplied");
       applyUrlCoupon();
     }
