@@ -44,6 +44,20 @@
       billing.style.display = 'none';
       console.log("🔧 Hidden billing section again");
     }
+// Cacher l’iframe de paiement directement (Pai / Rebilly)
+const framepayIframe = document.querySelector('iframe[src*=\"framepay.payments.ai\"]');
+if (framepayIframe && framepayIframe.style.display !== 'none') {
+  framepayIframe.style.display = 'none';
+  console.log(\"🔧 Hidden framepay iframe directly\");
+}
+
+// OU forcer le bloc entier avec !important
+const cardBlock = document.querySelector('[data-page-element=\"CheckoutMultiplePayments/V2\"]');
+if (cardBlock) {
+  cardBlock.style.setProperty('display', 'none', 'important');
+  console.log(\"🔧 Forced hide on full payment block with !important\");
+}
+
   }
 
   function customizeSubmitButton() {
