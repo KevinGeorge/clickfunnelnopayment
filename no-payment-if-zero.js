@@ -33,26 +33,31 @@
   }
 
 function hidePaymentElements() {
-  const fullBlock = document.querySelector('[data-page-element="CheckoutMultiplePayments/V2"]');
-  if (fullBlock) {
-    fullBlock.style.setProperty('visibility', 'hidden', 'important');
-    fullBlock.style.setProperty('height', '0', 'important');
-    fullBlock.style.setProperty('overflow', 'hidden', 'important');
-    fullBlock.style.setProperty('padding', '0', 'important');
-    fullBlock.style.setProperty('margin', '0', 'important');
-    console.log("🛑 Forced full block to disappear visually and structurally");
+  // Supprimer entièrement le bloc paiement
+  const paymentBlock = document.querySelector('[data-page-element="CheckoutMultiplePayments/V2"]');
+  if (paymentBlock && paymentBlock.parentNode) {
+    paymentBlock.remove();
+    console.log("💣 Removed entire payment block");
   }
 
-  const framepayIframe = document.querySelector('iframe[src*="framepay.payments.ai"]');
-  if (framepayIframe) {
-    framepayIframe.style.setProperty('display', 'none', 'important');
-    console.log("🛑 Hidden Framepay iframe with !important");
+  // Supprimer les iframes Pai manuellement si recréés
+  document.querySelectorAll('iframe[src*="framepay.payments.ai"]').forEach((iframe, i) => {
+    iframe.remove();
+    console.log(`💣 Removed framepay iframe #${i + 1}`);
+  });
+
+  // Supprimer aussi la div spinner de loading Pai
+  const spinner = document.querySelector('[data-page-element="Spinner/V1"]');
+  if (spinner) {
+    spinner.remove();
+    console.log("💣 Removed spinner");
   }
 
+  // Masquer adresse de facturation si encore là
   const billing = document.querySelector('.pai-billing-address-content');
   if (billing) {
     billing.style.setProperty('display', 'none', 'important');
-    console.log("🛑 Hidden billing section with !important");
+    console.log("🧼 Hidden billing address");
   }
 }
 
