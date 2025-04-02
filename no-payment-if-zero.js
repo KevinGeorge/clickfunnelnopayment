@@ -23,49 +23,42 @@
     }
   }
 
-  function makeItFree() {
-    console.log("💸 Making checkout free — hiding payment");
+function makeItFree() {
+  console.log("💸 Making checkout free — hiding payment");
 
-    // 1. Cacher les modes de paiement ClickFunnels natifs
-    document.querySelectorAll('[data-page-element="CheckoutMultiplePayments/V2"], [data-page-element="CheckoutSavedMultiplePayments/V1"]').forEach(el => {
-      if (el && el.closest('.elCheckoutRow')) {
-        el.closest('.elCheckoutRow').style.display = 'none';
-        console.log("🔧 Hidden elCheckoutRow wrapper of payment element");
-      }
-    });
-
-    // 2. Paiement Pai direct
-    const paiSection = document.querySelector('.pai-payment-content');
-    if (paiSection) {
-      paiSection.style.display = 'none';
-      console.log("🔧 Hidden .pai-payment-content");
-    }
-
-    const billing = document.querySelector('.pai-billing-address-content');
-    if (billing) {
-      billing.style.display = 'none';
-      console.log("🔧 Hidden .pai-billing-address-content");
-    }
-
-    // 3. Modifier texte Billing → Address
-    const billingLabel = document.querySelector('.elBillingForm .elCheckoutFormLabel');
-    if (billingLabel) billingLabel.innerText = "Address Information";
-
-    // 4. Remplacer le bouton de commande
-    const button = document.querySelector('[href="#submit-checkout-form"]');
-    if (button) {
-      const newButton = button.cloneNode(true);
-      button.replaceWith(newButton);
-
-      const label = newButton.querySelector('.elButtonMainText');
-      if (label) label.innerText = "Get Instant Access";
-
-      newButton.addEventListener('click', function () {
-        console.log("🧼 Submitting free checkout without payment...");
-        CheckoutSubmit.customSubmitFromButtonClick(this, () => scrollToFirstVisibleError());
-      });
-    }
+  // 1. Cacher tout le bloc de paiement (détecté par toi)
+  const fullPaymentBlock = document.querySelector('[data-page-element="CheckoutMultiplePayments/V2"]');
+  if (fullPaymentBlock) {
+    fullPaymentBlock.style.display = 'none';
+    console.log("🔧 Hidden full payment block: [data-page-element='CheckoutMultiplePayments/V2']");
   }
+
+  // 2. Cacher la section d’adresse de facturation si présente
+  const billing = document.querySelector('.pai-billing-address-content');
+  if (billing) {
+    billing.style.display = 'none';
+    console.log("🔧 Hidden .pai-billing-address-content");
+  }
+
+  // 3. Changer \"Billing Information\" → \"Address Information\"
+  const billingLabel = document.querySelector('.elBillingForm .elCheckoutFormLabel');
+  if (billingLabel) billingLabel.innerText = "Address Information";
+
+  // 4. Remplacer le bouton de commande
+  const button = document.querySelector('[href="#submit-checkout-form"]');
+  if (button) {
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
+
+    const label = newButton.querySelector('.elButtonMainText');
+    if (label) label.innerText = "Get Instant Access";
+
+    newButton.addEventListener('click', function () {
+      console.log("🧼 Submitting free checkout without payment...");
+      CheckoutSubmit.customSubmitFromButtonClick(this, () => scrollToFirstVisibleError());
+    });
+  }
+}
 
   let isFree = false;
   Checkout.store.summary.listen((newValue) => {
