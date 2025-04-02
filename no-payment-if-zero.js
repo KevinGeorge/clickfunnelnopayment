@@ -77,25 +77,33 @@ function hidePaymentElements() {
   }
 }
 
-  function customizeSubmitButton() {
-    const billingLabel = document.querySelector('.elBillingForm .elCheckoutFormLabel');
-    if (billingLabel) billingLabel.innerText = getAddressText();
+function customizeSubmitButton() {
+  const billingLabel = document.querySelector('.elBillingForm .elCheckoutFormLabel');
+  if (billingLabel) billingLabel.innerText = "Address Information";
 
-    const button = document.querySelector('[href="#submit-checkout-form"]');
-    if (button) {
-      const newButton = button.cloneNode(true);
-      button.replaceWith(newButton);
+  const button = document.querySelector('[href=\"#submit-checkout-form\"]');
+  if (button) {
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
 
-      const label = newButton.querySelector('.elButtonMainText');
-      if (label) label.innerText = getFreeSubmitText();
+    const label = newButton.querySelector('.elButtonMainText');
+    if (label) label.innerText = "Get Instant Access";
 
-      newButton.addEventListener('click', function () {
-        console.log("🧼 Submitting free checkout without payment...");
-        CheckoutSubmit.customSubmitFromButtonClick(this, () => scrollToFirstVisibleError());
-      });
-    }
+    newButton.addEventListener('click', function (e) {
+      e.preventDefault();
+      console.log("🧼 Submitting free checkout without payment...");
+
+      // Force submission without payment method
+      if (typeof CheckoutSubmit !== 'undefined') {
+        CheckoutSubmit.customSubmitFromButtonClick(this, () => {
+          console.log("✅ Custom submission done");
+        });
+      } else {
+        console.warn("⚠️ CheckoutSubmit is not available");
+      }
+    });
   }
-
+}
   let isFree = false;
 
   function makeItFree() {
